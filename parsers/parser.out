@@ -1,0 +1,987 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> formula
+Rule 1     formula -> formula AND formula
+Rule 2     formula -> formula OR formula
+Rule 3     formula -> formula IMPLIES formula
+Rule 4     formula -> formula EQUIV formula
+Rule 5     formula -> formula UNTIL formula
+Rule 6     formula -> formula WEAKUNTIL formula
+Rule 7     formula -> formula RELEASE formula
+Rule 8     formula -> formula STRONGRELEASE formula
+Rule 9     formula -> NEXT formula
+Rule 10    formula -> EVENTUALLY formula
+Rule 11    formula -> GLOBALLY formula
+Rule 12    formula -> NOT formula
+Rule 13    formula -> TRUE
+Rule 14    formula -> FALSE
+Rule 15    formula -> TERM
+Rule 16    formula -> LPAR formula RPAR
+
+Terminals, with rules where they appear
+
+AND                  : 1
+EQUIV                : 4
+EVENTUALLY           : 10
+FALSE                : 14
+GLOBALLY             : 11
+IMPLIES              : 3
+LPAR                 : 16
+NEXT                 : 9
+NOT                  : 12
+OR                   : 2
+RELEASE              : 7
+RPAR                 : 16
+STRONGRELEASE        : 8
+TERM                 : 15
+TRUE                 : 13
+UNTIL                : 5
+WEAKUNTIL            : 6
+error                : 
+
+Nonterminals, with rules where they appear
+
+formula              : 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 10 11 12 16 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 1
+
+state 1
+
+    (0) S' -> formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+
+state 2
+
+    (9) formula -> NEXT . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 18
+
+state 3
+
+    (10) formula -> EVENTUALLY . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 19
+
+state 4
+
+    (11) formula -> GLOBALLY . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 20
+
+state 5
+
+    (12) formula -> NOT . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 21
+
+state 6
+
+    (13) formula -> TRUE .
+
+    AND             reduce using rule 13 (formula -> TRUE .)
+    OR              reduce using rule 13 (formula -> TRUE .)
+    IMPLIES         reduce using rule 13 (formula -> TRUE .)
+    EQUIV           reduce using rule 13 (formula -> TRUE .)
+    UNTIL           reduce using rule 13 (formula -> TRUE .)
+    WEAKUNTIL       reduce using rule 13 (formula -> TRUE .)
+    RELEASE         reduce using rule 13 (formula -> TRUE .)
+    STRONGRELEASE   reduce using rule 13 (formula -> TRUE .)
+    $end            reduce using rule 13 (formula -> TRUE .)
+    RPAR            reduce using rule 13 (formula -> TRUE .)
+
+
+state 7
+
+    (14) formula -> FALSE .
+
+    AND             reduce using rule 14 (formula -> FALSE .)
+    OR              reduce using rule 14 (formula -> FALSE .)
+    IMPLIES         reduce using rule 14 (formula -> FALSE .)
+    EQUIV           reduce using rule 14 (formula -> FALSE .)
+    UNTIL           reduce using rule 14 (formula -> FALSE .)
+    WEAKUNTIL       reduce using rule 14 (formula -> FALSE .)
+    RELEASE         reduce using rule 14 (formula -> FALSE .)
+    STRONGRELEASE   reduce using rule 14 (formula -> FALSE .)
+    $end            reduce using rule 14 (formula -> FALSE .)
+    RPAR            reduce using rule 14 (formula -> FALSE .)
+
+
+state 8
+
+    (15) formula -> TERM .
+
+    AND             reduce using rule 15 (formula -> TERM .)
+    OR              reduce using rule 15 (formula -> TERM .)
+    IMPLIES         reduce using rule 15 (formula -> TERM .)
+    EQUIV           reduce using rule 15 (formula -> TERM .)
+    UNTIL           reduce using rule 15 (formula -> TERM .)
+    WEAKUNTIL       reduce using rule 15 (formula -> TERM .)
+    RELEASE         reduce using rule 15 (formula -> TERM .)
+    STRONGRELEASE   reduce using rule 15 (formula -> TERM .)
+    $end            reduce using rule 15 (formula -> TERM .)
+    RPAR            reduce using rule 15 (formula -> TERM .)
+
+
+state 9
+
+    (16) formula -> LPAR . formula RPAR
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 22
+
+state 10
+
+    (1) formula -> formula AND . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 23
+
+state 11
+
+    (2) formula -> formula OR . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 24
+
+state 12
+
+    (3) formula -> formula IMPLIES . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 25
+
+state 13
+
+    (4) formula -> formula EQUIV . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 26
+
+state 14
+
+    (5) formula -> formula UNTIL . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 27
+
+state 15
+
+    (6) formula -> formula WEAKUNTIL . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 28
+
+state 16
+
+    (7) formula -> formula RELEASE . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 29
+
+state 17
+
+    (8) formula -> formula STRONGRELEASE . formula
+    (1) formula -> . formula AND formula
+    (2) formula -> . formula OR formula
+    (3) formula -> . formula IMPLIES formula
+    (4) formula -> . formula EQUIV formula
+    (5) formula -> . formula UNTIL formula
+    (6) formula -> . formula WEAKUNTIL formula
+    (7) formula -> . formula RELEASE formula
+    (8) formula -> . formula STRONGRELEASE formula
+    (9) formula -> . NEXT formula
+    (10) formula -> . EVENTUALLY formula
+    (11) formula -> . GLOBALLY formula
+    (12) formula -> . NOT formula
+    (13) formula -> . TRUE
+    (14) formula -> . FALSE
+    (15) formula -> . TERM
+    (16) formula -> . LPAR formula RPAR
+
+    NEXT            shift and go to state 2
+    EVENTUALLY      shift and go to state 3
+    GLOBALLY        shift and go to state 4
+    NOT             shift and go to state 5
+    TRUE            shift and go to state 6
+    FALSE           shift and go to state 7
+    TERM            shift and go to state 8
+    LPAR            shift and go to state 9
+
+    formula                        shift and go to state 30
+
+state 18
+
+    (9) formula -> NEXT formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 9 (formula -> NEXT formula .)
+    OR              reduce using rule 9 (formula -> NEXT formula .)
+    IMPLIES         reduce using rule 9 (formula -> NEXT formula .)
+    EQUIV           reduce using rule 9 (formula -> NEXT formula .)
+    UNTIL           reduce using rule 9 (formula -> NEXT formula .)
+    WEAKUNTIL       reduce using rule 9 (formula -> NEXT formula .)
+    RELEASE         reduce using rule 9 (formula -> NEXT formula .)
+    STRONGRELEASE   reduce using rule 9 (formula -> NEXT formula .)
+    $end            reduce using rule 9 (formula -> NEXT formula .)
+    RPAR            reduce using rule 9 (formula -> NEXT formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 19
+
+    (10) formula -> EVENTUALLY formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 10 (formula -> EVENTUALLY formula .)
+    OR              reduce using rule 10 (formula -> EVENTUALLY formula .)
+    IMPLIES         reduce using rule 10 (formula -> EVENTUALLY formula .)
+    EQUIV           reduce using rule 10 (formula -> EVENTUALLY formula .)
+    UNTIL           reduce using rule 10 (formula -> EVENTUALLY formula .)
+    WEAKUNTIL       reduce using rule 10 (formula -> EVENTUALLY formula .)
+    RELEASE         reduce using rule 10 (formula -> EVENTUALLY formula .)
+    STRONGRELEASE   reduce using rule 10 (formula -> EVENTUALLY formula .)
+    $end            reduce using rule 10 (formula -> EVENTUALLY formula .)
+    RPAR            reduce using rule 10 (formula -> EVENTUALLY formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 20
+
+    (11) formula -> GLOBALLY formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 11 (formula -> GLOBALLY formula .)
+    OR              reduce using rule 11 (formula -> GLOBALLY formula .)
+    IMPLIES         reduce using rule 11 (formula -> GLOBALLY formula .)
+    EQUIV           reduce using rule 11 (formula -> GLOBALLY formula .)
+    UNTIL           reduce using rule 11 (formula -> GLOBALLY formula .)
+    WEAKUNTIL       reduce using rule 11 (formula -> GLOBALLY formula .)
+    RELEASE         reduce using rule 11 (formula -> GLOBALLY formula .)
+    STRONGRELEASE   reduce using rule 11 (formula -> GLOBALLY formula .)
+    $end            reduce using rule 11 (formula -> GLOBALLY formula .)
+    RPAR            reduce using rule 11 (formula -> GLOBALLY formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 21
+
+    (12) formula -> NOT formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 12 (formula -> NOT formula .)
+    OR              reduce using rule 12 (formula -> NOT formula .)
+    IMPLIES         reduce using rule 12 (formula -> NOT formula .)
+    EQUIV           reduce using rule 12 (formula -> NOT formula .)
+    UNTIL           reduce using rule 12 (formula -> NOT formula .)
+    WEAKUNTIL       reduce using rule 12 (formula -> NOT formula .)
+    RELEASE         reduce using rule 12 (formula -> NOT formula .)
+    STRONGRELEASE   reduce using rule 12 (formula -> NOT formula .)
+    $end            reduce using rule 12 (formula -> NOT formula .)
+    RPAR            reduce using rule 12 (formula -> NOT formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 22
+
+    (16) formula -> LPAR formula . RPAR
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    RPAR            shift and go to state 31
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+
+state 23
+
+    (1) formula -> formula AND formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 1 (formula -> formula AND formula .)
+    OR              reduce using rule 1 (formula -> formula AND formula .)
+    IMPLIES         reduce using rule 1 (formula -> formula AND formula .)
+    EQUIV           reduce using rule 1 (formula -> formula AND formula .)
+    UNTIL           reduce using rule 1 (formula -> formula AND formula .)
+    WEAKUNTIL       reduce using rule 1 (formula -> formula AND formula .)
+    RELEASE         reduce using rule 1 (formula -> formula AND formula .)
+    STRONGRELEASE   reduce using rule 1 (formula -> formula AND formula .)
+    $end            reduce using rule 1 (formula -> formula AND formula .)
+    RPAR            reduce using rule 1 (formula -> formula AND formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 24
+
+    (2) formula -> formula OR formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 2 (formula -> formula OR formula .)
+    OR              reduce using rule 2 (formula -> formula OR formula .)
+    IMPLIES         reduce using rule 2 (formula -> formula OR formula .)
+    EQUIV           reduce using rule 2 (formula -> formula OR formula .)
+    UNTIL           reduce using rule 2 (formula -> formula OR formula .)
+    WEAKUNTIL       reduce using rule 2 (formula -> formula OR formula .)
+    RELEASE         reduce using rule 2 (formula -> formula OR formula .)
+    STRONGRELEASE   reduce using rule 2 (formula -> formula OR formula .)
+    $end            reduce using rule 2 (formula -> formula OR formula .)
+    RPAR            reduce using rule 2 (formula -> formula OR formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 25
+
+    (3) formula -> formula IMPLIES formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 3 (formula -> formula IMPLIES formula .)
+    OR              reduce using rule 3 (formula -> formula IMPLIES formula .)
+    IMPLIES         reduce using rule 3 (formula -> formula IMPLIES formula .)
+    EQUIV           reduce using rule 3 (formula -> formula IMPLIES formula .)
+    UNTIL           reduce using rule 3 (formula -> formula IMPLIES formula .)
+    WEAKUNTIL       reduce using rule 3 (formula -> formula IMPLIES formula .)
+    RELEASE         reduce using rule 3 (formula -> formula IMPLIES formula .)
+    STRONGRELEASE   reduce using rule 3 (formula -> formula IMPLIES formula .)
+    $end            reduce using rule 3 (formula -> formula IMPLIES formula .)
+    RPAR            reduce using rule 3 (formula -> formula IMPLIES formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 26
+
+    (4) formula -> formula EQUIV formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    AND             reduce using rule 4 (formula -> formula EQUIV formula .)
+    OR              reduce using rule 4 (formula -> formula EQUIV formula .)
+    IMPLIES         reduce using rule 4 (formula -> formula EQUIV formula .)
+    EQUIV           reduce using rule 4 (formula -> formula EQUIV formula .)
+    UNTIL           reduce using rule 4 (formula -> formula EQUIV formula .)
+    WEAKUNTIL       reduce using rule 4 (formula -> formula EQUIV formula .)
+    RELEASE         reduce using rule 4 (formula -> formula EQUIV formula .)
+    STRONGRELEASE   reduce using rule 4 (formula -> formula EQUIV formula .)
+    $end            reduce using rule 4 (formula -> formula EQUIV formula .)
+    RPAR            reduce using rule 4 (formula -> formula EQUIV formula .)
+
+  ! AND             [ shift and go to state 10 ]
+  ! OR              [ shift and go to state 11 ]
+  ! IMPLIES         [ shift and go to state 12 ]
+  ! EQUIV           [ shift and go to state 13 ]
+  ! UNTIL           [ shift and go to state 14 ]
+  ! WEAKUNTIL       [ shift and go to state 15 ]
+  ! RELEASE         [ shift and go to state 16 ]
+  ! STRONGRELEASE   [ shift and go to state 17 ]
+
+
+state 27
+
+    (5) formula -> formula UNTIL formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    $end            reduce using rule 5 (formula -> formula UNTIL formula .)
+    RPAR            reduce using rule 5 (formula -> formula UNTIL formula .)
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+  ! AND             [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! OR              [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! IMPLIES         [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! EQUIV           [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! UNTIL           [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! WEAKUNTIL       [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! RELEASE         [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+  ! STRONGRELEASE   [ reduce using rule 5 (formula -> formula UNTIL formula .) ]
+
+
+state 28
+
+    (6) formula -> formula WEAKUNTIL formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    $end            reduce using rule 6 (formula -> formula WEAKUNTIL formula .)
+    RPAR            reduce using rule 6 (formula -> formula WEAKUNTIL formula .)
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+  ! AND             [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! OR              [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! IMPLIES         [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! EQUIV           [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! UNTIL           [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! WEAKUNTIL       [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! RELEASE         [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+  ! STRONGRELEASE   [ reduce using rule 6 (formula -> formula WEAKUNTIL formula .) ]
+
+
+state 29
+
+    (7) formula -> formula RELEASE formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    $end            reduce using rule 7 (formula -> formula RELEASE formula .)
+    RPAR            reduce using rule 7 (formula -> formula RELEASE formula .)
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+  ! AND             [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! OR              [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! IMPLIES         [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! EQUIV           [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! UNTIL           [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! WEAKUNTIL       [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! RELEASE         [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+  ! STRONGRELEASE   [ reduce using rule 7 (formula -> formula RELEASE formula .) ]
+
+
+state 30
+
+    (8) formula -> formula STRONGRELEASE formula .
+    (1) formula -> formula . AND formula
+    (2) formula -> formula . OR formula
+    (3) formula -> formula . IMPLIES formula
+    (4) formula -> formula . EQUIV formula
+    (5) formula -> formula . UNTIL formula
+    (6) formula -> formula . WEAKUNTIL formula
+    (7) formula -> formula . RELEASE formula
+    (8) formula -> formula . STRONGRELEASE formula
+
+    $end            reduce using rule 8 (formula -> formula STRONGRELEASE formula .)
+    RPAR            reduce using rule 8 (formula -> formula STRONGRELEASE formula .)
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+    IMPLIES         shift and go to state 12
+    EQUIV           shift and go to state 13
+    UNTIL           shift and go to state 14
+    WEAKUNTIL       shift and go to state 15
+    RELEASE         shift and go to state 16
+    STRONGRELEASE   shift and go to state 17
+
+  ! AND             [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! OR              [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! IMPLIES         [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! EQUIV           [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! UNTIL           [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! WEAKUNTIL       [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! RELEASE         [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+  ! STRONGRELEASE   [ reduce using rule 8 (formula -> formula STRONGRELEASE formula .) ]
+
+
+state 31
+
+    (16) formula -> LPAR formula RPAR .
+
+    AND             reduce using rule 16 (formula -> LPAR formula RPAR .)
+    OR              reduce using rule 16 (formula -> LPAR formula RPAR .)
+    IMPLIES         reduce using rule 16 (formula -> LPAR formula RPAR .)
+    EQUIV           reduce using rule 16 (formula -> LPAR formula RPAR .)
+    UNTIL           reduce using rule 16 (formula -> LPAR formula RPAR .)
+    WEAKUNTIL       reduce using rule 16 (formula -> LPAR formula RPAR .)
+    RELEASE         reduce using rule 16 (formula -> LPAR formula RPAR .)
+    STRONGRELEASE   reduce using rule 16 (formula -> LPAR formula RPAR .)
+    $end            reduce using rule 16 (formula -> LPAR formula RPAR .)
+    RPAR            reduce using rule 16 (formula -> LPAR formula RPAR .)
+
