@@ -114,13 +114,31 @@ def is_consistent(dag, subset, closure):
     return True
 
 
+def resolve_polarity(nodes, nid):
+    """
+    Follow a chain of ~/! nodes down to the underlying closure member.
+
+    Returns (base_nid, positive) where base_nid is the first non-negation node
+    reached and positive says whether the original node holds exactly when
+    base_nid holds (True) or exactly when it does not (False).
+    """
+    positive = True
+    while nodes[nid][0] in ('~', '!'):
+        nid = nodes[nid][1]
+        positive = not positive
+    return nid, positive
+
+
 def get_gnba_successors_lazy(dag, current_state, closure):
     """
-    Highly optimized, truly lazy GNBA successor generator.
+    Lazy GNBA successor generator.
     Derives next-state properties directly from the current state rules.
     """
     nodes = dag._nodes
     closure_list = sorted(closure)
+    TRUE = dag._index.get(('true', None, None))
+    FALSE = dag._index.get(('false', None, None))
+    eval_memo = {}
 
     # 1. Deduce absolute requirements for the candidate successor state
     must_have = set()
@@ -130,18 +148,25 @@ def get_gnba_successors_lazy(dag, current_state, closure):
         op, l, r = nodes[nid]
 
         if op == 'X':
-            # Next-step rule: X(l) in current_state <=> l MUST be in next state
-            if nid in current_state:
-                must_have.add(l)
+            # Next-step rule: X(l) in current_state <=> l MUST hold in next state.
+            # `l` may be a bare negation (e.g. `X ~p` from PNF), which is never a
+            # closure member, so I use resolve_polarity()
+            base, positive = resolve_polarity(nodes, l)
+            l_must_hold = (nid in current_state)
+            if l_must_hold == positive:
+                must_have.add(base)
             else:
-                must_not_have.add(l)
+                must_not_have.add(base)
 
         elif op == 'U':
             u_in_now = nid in current_state
-            r_in_now = r in current_state
-            l_in_now = l in current_state
+            # l/r may be bare negations (or other composites) that are never
+            # closure members themselves, so their truth must be *evaluated*,
+            # not looked up via raw membership in current_state.
+            r_in_now = evaluate_node(r, current_state, nodes, eval_memo, TRUE, FALSE)
+            l_in_now = evaluate_node(l, current_state, nodes, eval_memo, TRUE, FALSE)
             # Step rule for Until: if u is true now but r isn't satisfied yet,
-            # then u MUST persist into the next state.
+            # then u must persist into the next state.
             if u_in_now and not r_in_now:
                 must_have.add(nid)
             # If U is false and l is true now, the next state may not have it, since:
@@ -152,16 +177,16 @@ def get_gnba_successors_lazy(dag, current_state, closure):
 
         elif op == 'R':
             r_in_now = nid in current_state
-            l_satisfied = l in current_state
-            r_satisfied = r in current_state
+            l_satisfied = evaluate_node(l, current_state, nodes, eval_memo, TRUE, FALSE)
+            r_satisfied = evaluate_node(r, current_state, nodes, eval_memo, TRUE, FALSE)
 
-            # Rule 1: If Release is active, but the unlocking condition (l) hasn't
-            # triggered yet, the obligation MUST roll over to the next state.
+            # Rule 1: If R is active, but the unlocking condition (l) hasn't
+            # triggered yet, the R must roll over to the next state.
             if r_in_now and not l_satisfied:
                 must_have.add(nid)
 
-            # Rule 2: If Release is inactive, but its baseline right-hand side (r)
-            # is true, it means the next state is forced to break the release rule.
+            # Rule 2: If R is inactive, but its r is true,
+            # it means the next state is forced to break the release rule.
             elif not r_in_now and r_satisfied:
                 must_not_have.add(nid)
 
@@ -169,7 +194,7 @@ def get_gnba_successors_lazy(dag, current_state, closure):
     if not must_have.isdisjoint(must_not_have):
         return
 
-    # 2. Backtrack and branch ONLY over the remaining unconstrained nodes in the closure
+    # 2. Backtrack and branch only over the remaining unconstrained nodes in the closure
     unconstrained = [nid for nid in closure_list if nid not in must_have and nid not in must_not_have]
 
     def branch_successors(index, current_built_set):
@@ -198,7 +223,7 @@ def get_gnba_successors_lazy(dag, current_state, closure):
 
 def generate_initial_states(dag, closure, root):
     """
-    Like generate_consistent_states, but forces `root` into every candidate.
+    generates initial states by forcing `root` into every candidate.
     Halves (at minimum) the backtracking tree and avoids materialising
     unreachable non-initial states entirely.
     """
@@ -215,12 +240,12 @@ def generate_initial_states(dag, closure, root):
 
         nid = closure_list[index]
 
-        if nid == FALSE:                    # never included
+        if nid == TRUE or nid == root:      # always included (root wins over FALSE:
+            current_set.add(nid)            # a `false` PNF root is forced in, then
+            yield from backtrack(index + 1, current_set)  # rejected by is_consistent,
+            current_set.remove(nid)         # so a trivially-true property yields no
+        elif nid == FALSE:                  # initial states rather than over-accepting)
             yield from backtrack(index + 1, current_set)
-        elif nid == TRUE or nid == root:    # always included
-            current_set.add(nid)
-            yield from backtrack(index + 1, current_set)
-            current_set.remove(nid)
         else:                               # free to branch
             yield from backtrack(index + 1, current_set)   # exclude
             current_set.add(nid)
@@ -247,13 +272,17 @@ def compute_acceptance(dag, states, closure):
     """computes the acceptance set(s)"""
     nodes = dag._nodes
     acceptance = []
+    TRUE = dag._index.get(('true', None, None))
+    FALSE = dag._index.get(('false', None, None))
 
     for nid in sorted(closure):
         op, l, r = nodes[nid]
         if op == 'U':
+            # r may be a bare negation (never a closure member itself), so its
+            # truth in s must be evaluated rather than checked via membership.
             acc = frozenset(
                 s for s in states
-                if nid not in s or r in s
+                if nid not in s or evaluate_node(r, s, nodes, {}, TRUE, FALSE)
             )
             acceptance.append(acc)
 
@@ -340,6 +369,58 @@ def build_gnba(dag, root):
 # =========================================================
 # HOA OUTPUT & DOT UTILITIES
 # =========================================================
+
+def to_hoa(gnba: GNBA, formula_str=""):
+    """
+    Serialises the GNBA to the HOA v1 format (https://adl.github.io/hoaf/).
+    Acceptance is state-based generalized-Buchi: Inf(0)&Inf(1)&...&Inf(k-1),
+    one Inf(i) per acceptance set in gnba.acceptance.
+    """
+    ap_names = gnba.ap_names
+    ap_index = {name: i for i, name in enumerate(ap_names)}
+    n_acc = len(gnba.acceptance)
+
+    def guard_for(lbl):
+        if not ap_names:
+            return "t"
+        return "&".join(
+            str(ap_index[name]) if name in lbl else f"!{ap_index[name]}"
+            for name in ap_names
+        )
+
+    def acc_sig(state_content):
+        sets = [i for i, acc in enumerate(gnba.acceptance) if state_content in acc]
+        return "{" + " ".join(str(i) for i in sets) + "}" if sets else ""
+
+    lines = ["HOA: v1"]
+    if formula_str:
+        lines.append(f'name: "GNBA for {formula_str}"')
+    lines.append(f"States: {len(gnba.states)}")
+    for i in gnba.initial:
+        lines.append(f"Start: {i}")
+    lines.append(f"AP: {len(ap_names)}" + "".join(f' "{n}"' for n in ap_names))
+
+    if n_acc == 0:
+        lines.append("acc-name: all")
+        lines.append("Acceptance: 0 t")
+    elif n_acc == 1:
+        lines.append("acc-name: Buchi")
+        lines.append("Acceptance: 1 Inf(0)")
+    else:
+        lines.append(f"acc-name: generalized-Buchi {n_acc}")
+        lines.append(f"Acceptance: {n_acc} " + "&".join(f"Inf({i})" for i in range(n_acc)))
+
+    lines.append("properties: trans-labels explicit-labels state-acc")
+    lines.append("--BODY--")
+
+    for i in range(len(gnba.states)):
+        sig = acc_sig(gnba.states[i])
+        lines.append(f"State: {i}" + (f" {sig}" if sig else ""))
+        for lbl, dst in gnba.transitions.get(i, []):
+            lines.append(f"[{guard_for(lbl)}] {dst}")
+
+    lines.append("--END--")
+    return "\n".join(lines)
 
 def label_to_hoa(true_aps, ap_names):
     if not ap_names:

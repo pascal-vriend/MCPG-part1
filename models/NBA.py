@@ -12,23 +12,23 @@ class NBA:
 
 
 def degeneralize_to_nba(gnba: GNBA):
+    """used only if the GNBa is already generated and we want to make it into a NBA"""
     k = len(gnba.acceptance)
     ap_names = gnba.ap_names
 
     # Edge case: If there are no acceptance sets (no U operators in formula),
     # everything is unconditionally accepting. We treat it as 1 trivial copy.
     if k == 0:
-        gnba_acc_sets = {1: frozenset(gnba.states)}  # Changed to store frozensets directly
+        gnba_acc_sets = {1: frozenset(gnba.states)}
         k = 1
     else:
-        # Map your GNBA acceptance sets to 1-based indexing to match slides:
-        # F_1 is gnba.acceptance[0], F_2 is gnba.acceptance[1], etc.
+        # index starts at 1 so F_1 is gnba.acceptance[0], F_2 is gnba.acceptance[1], etc.
         gnba_acc_sets = {i + 1: gnba.acceptance[i] for i in range(k)}
 
     nba_states = []
     state_to_idx = {}
 
-    # 1. Create k copies of each state (using 1-based index for copies)
+    # 1. Create k copies of each state
     for copy_num in range(1, k + 1):
         for g_idx in range(len(gnba.states)):
             actual_frozenset = gnba.states[g_idx]  # Get the subformula set
@@ -39,11 +39,11 @@ def degeneralize_to_nba(gnba: GNBA):
     # 2. Initial states: Translate the integer index g_init to its actual frozenset
     nba_initial = [state_to_idx[(gnba.states[g_init], 1)] for g_init in gnba.initial]
 
-    # 3. Build Transitions based on your slide rules
+    # 3. Build Transitions
     nba_transitions = {idx: [] for idx in range(len(nba_states))}
 
     for (g_src, current_copy), src_idx in state_to_idx.items():
-        # Check the slide condition: does the GNBA state belong to F_i?
+        # Check: does the GNBA state belong to F_i?
         if g_src in gnba_acc_sets[current_copy]:
             # Move to copy i + 1 (cyclically)
             next_copy = (current_copy % k) + 1
@@ -53,7 +53,7 @@ def degeneralize_to_nba(gnba: GNBA):
 
         # Replicate the edges to the target copy
         # Since gnba.transitions maps an integer src to a list of (lbl, integer_dst),
-        # we look up the integer index of g_src first to pull its transitions.
+        # I look up the integer index of g_src first to pull its transitions.
         g_src_idx = gnba.states.index(g_src)
 
         for lbl, g_dst_idx in gnba.transitions.get(g_src_idx, []):
@@ -77,12 +77,50 @@ def label_to_hoa(true_aps, ap_names):
     return " & ".join(ap if ap in true_aps else f"!{ap}" for ap in ap_names)
 
 
+def nba_to_hoa(nba: NBA, formula_str=""):
+    """
+    Serialises the degeneralized NBA to the HOA v1 format
+    (https://adl.github.io/hoaf/). Acceptance is state-based Buchi: Inf(0).
+    """
+    ap_names = nba.ap_names
+    ap_index = {name: i for i, name in enumerate(ap_names)}
+
+    def guard_for(lbl):
+        if not ap_names:
+            return "t"
+        return "&".join(
+            str(ap_index[name]) if name in lbl else f"!{ap_index[name]}"
+            for name in ap_names
+        )
+
+    lines = ["HOA: v1"]
+    if formula_str:
+        lines.append(f'name: "NBA for {formula_str}"')
+    lines.append(f"States: {len(nba.states)}")
+    for i in nba.initial:
+        lines.append(f"Start: {i}")
+    lines.append(f"AP: {len(ap_names)}" + "".join(f' "{n}"' for n in ap_names))
+    lines.append("acc-name: Buchi")
+    lines.append("Acceptance: 1 Inf(0)")
+    lines.append("properties: trans-labels explicit-labels state-acc")
+    lines.append("--BODY--")
+
+    for i in range(len(nba.states)):
+        sig = " {0}" if i in nba.acceptance else ""
+        lines.append(f"State: {i}{sig}")
+        for lbl, dst in nba.transitions.get(i, []):
+            lines.append(f"[{guard_for(lbl)}] {dst}")
+
+    lines.append("--END--")
+    return "\n".join(lines)
+
+
 def get_nba_successors_lazy(dag, current_nba_state, closure, gnba_acc_sets, k):
     """
-    On-The-Fly Degeneralization Generator for NBA.
+    On-The-Fly Degeneralization Generator for NBA. It uses the lazy generator of GNBA so no explicit GNBA is generated.
     current_nba_state is a tuple: (gnba_state_frozenset, current_copy)
     """
-    # ─── ADD THIS DEFENSIVE CHECK HERE ──────────────────────────────────────
+    # check if it is a product automaton or a normal nba.
     if len(current_nba_state) == 2 and isinstance(current_nba_state[1], tuple):
         # Product Space Mode: State is (marking, (gnba_frozenset, copy_int))
         _, (g_src, current_copy) = current_nba_state
@@ -91,7 +129,7 @@ def get_nba_successors_lazy(dag, current_nba_state, closure, gnba_acc_sets, k):
         g_src, current_copy = current_nba_state
     # ────────────────────────────────────────────────────────────────────────
 
-    # 1. Calculate the target copy tracking variable based on slide rules
+    # 1. Calculate the target copy tracking variable
     if gnba_acc_sets[current_copy](g_src):
         next_copy = (current_copy % k) + 1
     else:

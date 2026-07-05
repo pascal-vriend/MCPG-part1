@@ -137,9 +137,9 @@ def to_pnf(dag, nid, neg=False):
 
     if op == 'W':
         if not neg:
-            return dag.make('U', r, dag.make('&', l, r))
-        else:
             return dag.make('R', r, dag.make('|', l, r))
+        else:
+            return dag.make('U', r, dag.make('&', l, r))
 
     if op == 'M':
         if not neg:

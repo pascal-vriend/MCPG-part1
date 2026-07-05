@@ -95,6 +95,11 @@ class PNExpression(object):
     def evaluate(self, _):
         pass
 
+    def key(self):
+        """A hashable canonical signature; equal signatures denote semantically
+        identical expressions and let the parser reuse a single atomic proposition."""
+        raise NotImplementedError
+
 
 class IsFireable(PNExpression):
     def __init__(self, net, *args):
@@ -107,6 +112,10 @@ class IsFireable(PNExpression):
                 return True
         return False
 
+    def key(self):
+        # is-fireable is an OR over transitions, so order is irrelevant.
+        return ('is-fireable', tuple(sorted(self.transitions)))
+
     def __repr__(self):
         return "is-fireable({})".format(self.transitions)
 
@@ -118,6 +127,9 @@ class TokensCount(PNExpression):
 
     def evaluate(self, marking):
         return sum([marking[p] for p in self.places])
+
+    def key(self):
+        return ('tokens-count', tuple(sorted(self.places)))
 
     def __repr__(self):
         return "tokens-count({})".format(self.places)
@@ -132,6 +144,9 @@ class IntegerLE(PNExpression):
     def evaluate(self, marking):
         return self.lhs.evaluate(marking) <= self.rhs.evaluate(marking)
 
+    def key(self):
+        return ('integer-le', self.lhs.key(), self.rhs.key())
+
     def __repr__(self):
         return "{} <= {}".format(self.lhs, self.rhs)
 
@@ -144,6 +159,9 @@ class IntegerConstant(PNExpression):
     def evaluate(self, marking):
         return self.value
 
+    def key(self):
+        return ('integer-constant', self.value)
+
     def __repr__(self):
         return str(self.value)
 
@@ -155,6 +173,10 @@ class IntegerSum(PNExpression):
 
     def evaluate(self, marking):
         return sum([x.evaluate(marking) for x in self.subexpressions])
+
+    def key(self):
+        # Addition is commutative, so sort the operand signatures.
+        return ('integer-sum', tuple(sorted(x.key() for x in self.subexpressions)))
 
     def __repr__(self):
         return " + ".join(self.subexpressions)
@@ -169,6 +191,9 @@ class IntegerDifference(PNExpression):
     def evaluate(self, marking):
         return self.lhs.evaluate(marking) - self.rhs.evaluate(marking)
 
+    def key(self):
+        return ('integer-difference', self.lhs.key(), self.rhs.key())
+
     def __repr__(self):
         return "{} - {}".format(self.lhs, self.rhs)
 
@@ -178,9 +203,23 @@ class PropertyXMLParser(object):
         self.props = []
         self.dag = LTLDAG()
         self.net = net
+        self._atom_cache = {}  # canonical expression key -> atomic DAG node id
 
     def __call__(self, node):
         return self.props, LTLDAGNode(self.dag, self.parse_ltl(node))
+
+    def _intern_prop(self, p):
+        """Register a proposition, reusing an existing atom for an equivalent one so
+        identical sub-expressions collapse to a single AP instead of blowing up the
+        product state space with distinct-but-equal atoms."""
+        key = p.key()
+        cached = self._atom_cache.get(key)
+        if cached is not None:
+            return cached
+        self.props.append(p)
+        atom = self.dag.make('p' + str(len(self.props) - 1))
+        self._atom_cache[key] = atom
+        return atom
 
     def parse_ltl(self, node):
         """Dedicated parser for logical LTL formulas. ALWAYS returns an integer node ID."""
@@ -225,14 +264,12 @@ class PropertyXMLParser(object):
         elif tag == 'is-fireable':
             subs = tuple(self.net.t_ids[x.text] for x in node.getchildren() if x.tag == 'transition')
             p = IsFireable(self.net, *subs)
-            self.props.append(p)
-            return self.dag.make('p' + str(len(self.props) - 1))
+            return self._intern_prop(p)
         elif tag == 'integer-le':
             lhs = self.parse_numeric(node.getchildren()[0])
             rhs = self.parse_numeric(node.getchildren()[1])
             p = IntegerLE(self.net, lhs, rhs)
-            self.props.append(p)
-            return self.dag.make('p' + str(len(self.props) - 1))
+            return self._intern_prop(p)
 
         raise ValueError(f"Unknown logical LTL tag: {tag}")
 
@@ -287,6 +324,20 @@ def get_petri_product_successors_lazy(net, props_list):
     # Cache node_id -> atomic string mapping.
     # This turns an O(N) DAG list-unpacker into a O(1) dictionary hit.
     atomic_cache = {}
+    # Cache of the full atom vocabulary of a closure, keyed by id(closure).
+    closure_atoms_cache = {}
+
+    def all_closure_atoms(dag, closure):
+        key = id(closure)
+        atoms = closure_atoms_cache.get(key)
+        if atoms is None:
+            atoms = set()
+            for nid in closure:
+                node_tag = dag._nodes[nid][0]
+                if isinstance(node_tag, str) and node_tag.startswith('p'):
+                    atoms.add(node_tag)
+            closure_atoms_cache[key] = atoms
+        return atoms
 
     def generator(dag, v, closure, gnba_acc_sets, k):
         marking, (nba_formulas, layer) = v
@@ -311,15 +362,31 @@ def get_petri_product_successors_lazy(net, props_list):
             if tag:
                 nba_expected_atoms.add(tag)
 
-        # 3. Guard: If current marking doesn't satisfy the current NBA node requirements,
-        # stop immediately before evaluating any physical petri net transitions
+        # 3. Guard: the marking's true atoms must match the NBA state's label exactly.
+        # Atoms the state asserts true must be true, and every closure atom the state
+        # does not assert must actually be false in the marking.
         if not nba_expected_atoms.issubset(true_atoms):
+            return
+        required_false_atoms = all_closure_atoms(dag, closure) - nba_expected_atoms
+        if not required_false_atoms.isdisjoint(true_atoms):
             return
 
         # 4. Transitions only fire if the LTL guard conditions pass
+        nba_state = (nba_formulas, layer)
+        produced = False
         for _, next_marking in net.successors(marking):
-            nba_state = (nba_formulas, layer)
+            produced = True
             for _, next_nba in get_nba_successors_lazy(dag, nba_state, closure, gnba_acc_sets, k):
                 yield None, (next_marking, next_nba)
+
+        # Deadlock handling: a marking with no enabled transitions has no real
+        # successors, but MCC LTL semantics stutter the final marking of a finite
+        # maximal run forever. I Model that as a self-loop that keeps the marking
+        # fixed while the NBA keeps advancing on the same (unchanged) labels;
+        # without this the run simply dies and deadlocking nets report a false
+        # SATISFIED for liveness properties.
+        if not produced:
+            for _, next_nba in get_nba_successors_lazy(dag, nba_state, closure, gnba_acc_sets, k):
+                yield None, (marking, next_nba)
 
     return generator

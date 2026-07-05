@@ -4,8 +4,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from part1.models.ltl_model import LTLDAG, to_pnf
-from part1.models.GNBA import build_gnba, to_dot, compute_closure
-from part1.models.NBA import degeneralize_to_nba, nba_to_dot
+from part1.models.GNBA import build_gnba, to_dot, to_hoa, compute_closure
+from part1.models.NBA import degeneralize_to_nba, nba_to_dot, nba_to_hoa
 from part1.parsers.ltl import LTLParser
 from part1.tools.nested_dfs import nested_dfs
 
@@ -159,6 +159,12 @@ def run_pipeline(formula_str, build_gnba_flag=True, build_nba_flag=True, run_che
             f.write(to_dot(gnba, dag=dag, formula_str=infix_str))
         _render_png("gnba")
 
+        # Export GNBA HOA
+        gnba_hoa = to_hoa(gnba, formula_str=infix_str)
+        with open(os.path.join(OUTPUT_DIR, "gnba.hoa"), "w", encoding="utf-8") as f:
+            f.write(gnba_hoa)
+        print(f"GNBA HOA saved to '{os.path.join(OUTPUT_DIR, 'gnba.hoa')}'")
+
     if build_nba_flag and gnba:
         print("\n Degeneralizing GNBA into NBA layers...")
         nba = degeneralize_to_nba(gnba)
@@ -172,6 +178,12 @@ def run_pipeline(formula_str, build_gnba_flag=True, build_nba_flag=True, run_che
         with open(os.path.join(OUTPUT_DIR, "nba.dot"), "w", encoding="utf-8") as f:
             f.write(nba_dot)
         _render_png("nba")
+
+        # Export NBA HOA
+        nba_hoa = nba_to_hoa(nba, formula_str=infix_str)
+        with open(os.path.join(OUTPUT_DIR, "nba.hoa"), "w", encoding="utf-8") as f:
+            f.write(nba_hoa)
+        print(f"NBA HOA saved to '{os.path.join(OUTPUT_DIR, 'nba.hoa')}'")
 
 
 def _render_png(name):

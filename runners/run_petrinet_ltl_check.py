@@ -10,7 +10,7 @@ import random
 
 # Ensure the root project folder is in Python's search path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from part1.models.GNBA import compute_closure, generate_initial_states
+from part1.models.GNBA import compute_closure, generate_initial_states, evaluate_node
 from part1.models.ltl_model import to_pnf
 from part1.models.petrinet import parse_pnml_file, parse_property_xml, get_petri_product_successors_lazy
 from part1.tools.nested_dfs import nested_dfs
@@ -38,6 +38,8 @@ def run_petri_checker(pnml_path, property_xml_path):
         structural_initials = [(s, 1) for s in generate_initial_states(dag, closure, pnf_root)]
 
         # 4. Build the dictionary of lambdas for acceptance sets
+        TRUE_id = dag._index.get(('true', None, None))
+        FALSE_id = dag._index.get(('false', None, None))
         gnba_acc_sets = {}
         if not until_formulas:
             # Trivial case: unconditionally accepting
@@ -45,14 +47,19 @@ def run_petri_checker(pnml_path, property_xml_path):
         else:
             for layer_idx, u_nid in enumerate(until_formulas, start=1):
                 r_nid = dag._nodes[u_nid][2]
-                # Make lambda's with the acceptence condition
-                gnba_acc_sets[layer_idx] = lambda s, u=u_nid, r=r_nid: u not in s or r in s
+                # Make lambda's with the acceptence condition.
+                # r_nid may be a bare negation (never a closure member itself),
+                # so its truth in s must be evaluated, not membership-checked.
+                gnba_acc_sets[layer_idx] = lambda s, u=u_nid, r=r_nid: (
+                    u not in s or evaluate_node(r, s, dag._nodes, {}, TRUE_id, FALSE_id)
+                )
 
         # 5. Generate the Petri net specific engine and initial product states
         product_successor_engine = get_petri_product_successors_lazy(net, props_list)
         product_initials = [(net.initial, init_nba) for init_nba in structural_initials]
 
         # 6. start the DFS and time it
+        print(f"\nverifying {prop_id}")
         start = time.perf_counter()
         is_violating, witness = nested_dfs(
             dag, pnf_root, closure, gnba_acc_sets, k,
@@ -60,6 +67,7 @@ def run_petri_checker(pnml_path, property_xml_path):
             initial_states_override=product_initials
         )
         elapsed = time.perf_counter() - start
+
 
         results.append({
             "id": prop_id,
@@ -71,7 +79,7 @@ def run_petri_checker(pnml_path, property_xml_path):
         if is_violating:
             print(
                 f"[FAIL] {prop_id} "
-                f"(time={elapsed:.3f}s, counterexample={len(witness)} states)"
+                f"(time={elapsed:.3f}s, counterexample_length={len(witness)} states)"
             )
         else:
             print(
@@ -92,13 +100,13 @@ def run_petri_checker(pnml_path, property_xml_path):
     print(f"Violated         : {violated}")
     print(f"Total runtime    : {total_time:.3f} s\n")
 
-    print("{:<20} {:<12} {:>10} {:>12}".format(
+    print("{:<35} {:<12} {:>10} {:>12}".format(
         "Property", "Status", "Time(s)", "Trace Len"
     ))
     print("-" * 70)
 
     for r in results:
-        print("{:<20} {:<12} {:>10.3f} {:>12}".format(
+        print("{:<35} {:<12} {:>10.3f} {:>12}".format(
             str(r["id"]),
             r["status"],
             r["time"],
