@@ -10,6 +10,9 @@ from part1.parsers.ltl import LTLParser
 from part1.tools.nested_dfs import nested_dfs
 
 SHOW_STATES = True
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "outputs"))
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 def print_state_subformulas(states_iterable, gnba_reference, dag, label_prefix=""):
@@ -152,7 +155,7 @@ def run_pipeline(formula_str, build_gnba_flag=True, build_nba_flag=True, run_che
             print_state_subformulas(gnba.states, gnba, dag, label_prefix="GNBA")
 
         # Export GNBA DOT
-        with open("../outputs/gnba.dot", "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, "gnba.dot"), "w", encoding="utf-8") as f:
             f.write(to_dot(gnba, dag=dag, formula_str=infix_str))
         _render_png("gnba")
 
@@ -166,16 +169,19 @@ def run_pipeline(formula_str, build_gnba_flag=True, build_nba_flag=True, run_che
 
         # Export NBA DOT
         nba_dot = nba_to_dot(nba, dag, gnba, formula_str=infix_str)
-        with open("../outputs/nba.dot", "w", encoding="utf-8") as f:
+        with open(os.path.join(OUTPUT_DIR, "nba.dot"), "w", encoding="utf-8") as f:
             f.write(nba_dot)
         _render_png("nba")
 
 
 def _render_png(name):
     try:
-        subprocess.run(["dot", "-Tpng", f"../outputs/{name}.dot", "-o", f"../outputs/{name}.png"],
+        dot_path = os.path.join(OUTPUT_DIR, f"{name}.dot")
+        png_path = os.path.join(OUTPUT_DIR, f"{name}.png")
+
+        subprocess.run(["dot", "-Tpng", dot_path, "-o", png_path],
                        capture_output=True, text=True)
-        print(f"Rendered graphic output saved to '../outputs/{name}.png'")
+        print(f"Rendered graphic output saved to '{png_path}'")
     except FileNotFoundError:
         pass
 
