@@ -1,4 +1,4 @@
-from part1.models.GNBA import generate_consistent_states
+from part1.models.GNBA import generate_initial_states
 from part1.models.NBA import get_nba_successors_lazy
 
 
@@ -18,8 +18,10 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
     if initial_states_override is not None:
         structural_initials = initial_states_override
     else:
-        all_consistent = list(generate_consistent_states(dag, closure))
-        structural_initials = [(s, 1) for s in all_consistent if pnf_root in s]
+        structural_initials = (
+            (s, 1)
+            for s in generate_initial_states(dag, closure, pnf_root)  # ← pin pnf_root
+        )
 
     blue_stack_set = set()
 
@@ -28,7 +30,7 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
         g_src, copy_num = actual_nba
         if copy_num != 1:
             return False
-        return g_src in gnba_acc_sets[1]
+        return gnba_acc_sets[1](g_src)
 
     def dfs_red(v):
         nonlocal states_explored
@@ -37,14 +39,12 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
 
         for lbl, w in get_successors_fn(dag, v, closure, gnba_acc_sets, k):
             if w in blue_stack_set:
-                # 🟢 FIX 1: Append the loop closure node so the witness
-                # knows EXACTLY where the back-edge points.
                 red_stack.append(w)
                 return True
 
             if w not in red_visited:
                 states_explored += 1
-                if states_explored % 20000 == 0:
+                if states_explored % 50000 == 0:
                     print(f"       [Progress] Discovered {states_explored} unique states...")
                 if dfs_red(w):
                     return True
@@ -54,6 +54,7 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
 
     def dfs_blue(v):
         nonlocal states_explored
+
         blue_visited.add(v)
         blue_stack.append(v)
         blue_stack_set.add(v)
@@ -61,7 +62,7 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
         for lbl, w in get_successors_fn(dag, v, closure, gnba_acc_sets, k):
             if w not in blue_visited:
                 states_explored += 1
-                if states_explored % 20000 == 0:
+                if states_explored % 50000 == 0:
                     print(f"       [Progress] Discovered {states_explored} unique states...")
                 if dfs_blue(w):
                     return True
@@ -76,17 +77,17 @@ def nested_dfs(dag, pnf_root, closure, gnba_acc_sets, k,
         return False
 
     # Main Search Loop
-    print("🚀 Initializing state space search loops...")
+    print(" Running nested DFS on the automaton...")
     for init_state in structural_initials:
         if init_state not in blue_visited:
             if dfs_blue(init_state):
-                print(f"🎉 Verification complete! Explored a total of {states_explored} states.")
+                print(f"Verification complete! Explored a total of {states_explored} states.")
 
-                # 🟢 FIX 2: Slice red_stack[1:] to prevent duplicating the accepting state.
+                #  Slice red_stack[1:] to prevent duplicating the accepting state.
                 # `blue_stack` ends with `v` and `red_stack` starts with `v`.
                 full_witness = list(blue_stack) + list(red_stack)[1:]
 
                 return True, full_witness
 
-    print(f"❌ Verification complete! No violating cycle found. Checked {states_explored} states.")
+    print(f" Verification complete! No violating cycle found. Checked {states_explored} states.")
     return False, []

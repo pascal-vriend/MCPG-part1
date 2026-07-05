@@ -1,9 +1,13 @@
+# Ensure the root project folder is in Python's search path
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 from part1.tools.explorer import StateSpaceExplorer
 from part1.models.dining_philosophers import DiningPhilosophers
 
 
 variants = ['LEFT_FIRST', 'ARBITRARY', 'MIXED']
-#variants = ['LEFT_FIRST']
 philosophers = [2, 3, 4, 5, 6]
 
 

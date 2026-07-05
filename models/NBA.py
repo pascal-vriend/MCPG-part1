@@ -92,7 +92,7 @@ def get_nba_successors_lazy(dag, current_nba_state, closure, gnba_acc_sets, k):
     # ────────────────────────────────────────────────────────────────────────
 
     # 1. Calculate the target copy tracking variable based on slide rules
-    if g_src in gnba_acc_sets[current_copy]:
+    if gnba_acc_sets[current_copy](g_src):
         next_copy = (current_copy % k) + 1
     else:
         next_copy = current_copy
@@ -103,14 +103,16 @@ def get_nba_successors_lazy(dag, current_nba_state, closure, gnba_acc_sets, k):
         yield lbl, next_nba_state
 
 
-def nba_to_dot(nba: NBA, dag, gnba: GNBA, formula_str="", prune_enabled=True):
+def nba_to_dot(nba: NBA, dag, gnba: GNBA, formula_str=""):
+    def _html_escape(s):
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
     lines = []
     lines.append("digraph NBA {")
     lines.append('  rankdir=LR;')
     lines.append('  node [shape=circle, fontname="Helvetica"];')
     if formula_str:
-        suffix = " (Pruned)" if prune_enabled else " (Unpruned)"
-        lines.append(f'  label="NBA: {formula_str}{suffix}";')
+        lines.append(f'  label="NBA: {formula_str}";')
         lines.append('  labelloc=t;')
     lines.append("")
 
@@ -123,15 +125,12 @@ def nba_to_dot(nba: NBA, dag, gnba: GNBA, formula_str="", prune_enabled=True):
         is_acc = i in nba.acceptance
         shape_attr = 'shape=doublecircle' if is_acc else 'shape=circle'
 
-        # Find what index this frozenset had in the original GNBA object
         try:
             g_idx = gnba.states.index(state_frozenset)
         except ValueError:
             g_idx = "?"
 
-        # State label displays its sequential index and its original copy location
         label = f'N{i}\\n(S{g_idx}, C{copy_num})'
-
         extra = ', style=filled, fillcolor=lightblue' if i in nba.initial else ''
         lines.append(f'  {i} [label="{label}", {shape_attr}{extra}];')
 
@@ -160,6 +159,7 @@ def nba_to_dot(nba: NBA, dag, gnba: GNBA, formula_str="", prune_enabled=True):
     lines.append('      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">')
     lines.append(
         '        <TR><TD><B>NBA State</B></TD><TD><B>GNBA State</B></TD><TD><B>Copy</B></TD><TD><B>GNBA Contents</B></TD></TR>')
+
     for i, (state_frozenset, copy_num) in enumerate(nba.states):
         try:
             g_idx = gnba.states.index(state_frozenset)
@@ -168,12 +168,19 @@ def nba_to_dot(nba: NBA, dag, gnba: GNBA, formula_str="", prune_enabled=True):
             g_idx = "?"
             contents = "Unknown"
 
+        # Apply HTML escaping to the generated text strings
+        n_str = _html_escape(f"N{i}")
+        s_str = _html_escape(f"S{g_idx}")
+        c_str = _html_escape(f"Copy {copy_num}")
+        cont_str = _html_escape("{ " + contents + " }")
+
         lines.append(
-            f'        <TR><TD ALIGN="LEFT">N{i}</TD>'
-            f'<TD ALIGN="LEFT">S{g_idx}</TD>'
-            f'<TD ALIGN="LEFT">Copy {copy_num}</TD>'
-            f'<TD ALIGN="LEFT">{{ {contents} }}</TD></TR>'
+            f'        <TR><TD ALIGN="LEFT">{n_str}</TD>'
+            f'<TD ALIGN="LEFT">{s_str}</TD>'
+            f'<TD ALIGN="LEFT">{c_str}</TD>'
+            f'<TD ALIGN="LEFT">{cont_str}</TD></TR>'
         )
+
     lines.append('      </TABLE>>];')
     lines.append("  }")
     lines.append("}")
